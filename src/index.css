@@ -1,0 +1,109 @@
+@charset "UTF-8";
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+* {
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+}
+
+li {
+  list-style-type: none;
+}
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* links and form */
+a:focus,
+a:active,
+button:active,
+button:focus,
+input:active,
+input:focus {
+  outline: none !important;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+input::-ms-clear {
+  display: none;
+}
+
+button,
+input {
+  cursor: pointer;
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+a,
+a:hover,
+a:visited {
+  text-decoration: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+a {
+  color: inherit;
+  font-size: inherit;
+}
+input,
+textarea,
+button {
+  border: none;
+  display: block;
+}
+input,
+textarea {
+  width: 100%;
+}
+textarea {
+  resize: vertical;
+}
+textarea:focus,
+select:focus {
+  outline: none;
+}
+input:is(:-webkit-autofill, :autofill) {
+  -webkit-background-clip: transparent;
+  -webkit-text-fill-color: #000;
+}
