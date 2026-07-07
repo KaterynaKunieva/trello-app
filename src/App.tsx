@@ -1,7 +1,7 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router';
-import { Board } from './pages/Board/Board';
-import { Default } from './pages/Default/Default';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Board from './pages/Board/Board';
+import Default from './pages/Default/Default';
 
 function App(): React.JSX.Element {
   return (

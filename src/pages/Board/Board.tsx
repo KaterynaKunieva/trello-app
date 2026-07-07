@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import './board.scss';
+import List from './components/List/List';
 
 function Board(): React.JSX.Element {
   const [title, setTitle] = useState('Моя тестова дошка');
@@ -30,9 +32,12 @@ function Board(): React.JSX.Element {
   return (
     <>
       <h1>{title}</h1>
-      <div>Hello board!</div>
+      {lists.map((list) => (
+        <List key={list.id} title={list.title} cards={list.cards} />
+      ))}
+      <button>Add new list</button>
     </>
   );
 }
 
-export { Board };
+export default Board;
