@@ -1,0 +1,24 @@
+@use '../../styles/variables' as *;
+
+.board {
+  background-color: get(primary-color);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.title {
+  color: get(secondary-color);
+  font-weight: 700;
+  text-align: center;
+  margin-top: get(board-gap);
+}
+.lists {
+  flex-grow: 1;
+  display: flex;
+  gap: get(board-gap);
+  overflow-x: auto;
+  padding: get(board-gap);
+}
+.addButton {
+  margin: get(board-gap) auto;
+}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import './board.scss';
+import classes from './board.module.scss';
 import List from './components/List/List';
+import Button from '../../common/Button/Button';
 
 function Board(): React.JSX.Element {
   const [title, setTitle] = useState('Моя тестова дошка');
@@ -30,13 +31,15 @@ function Board(): React.JSX.Element {
   ]);
 
   return (
-    <>
-      <h1>{title}</h1>
-      {lists.map((list) => (
-        <List key={list.id} title={list.title} cards={list.cards} />
-      ))}
-      <button>Add new list</button>
-    </>
+    <div className={classes.board}>
+      <h1 className={classes.title}>{title}</h1>
+      <div className={classes.lists}>
+        {lists.map((list) => (
+          <List key={list.id} title={list.title} cards={list.cards} />
+        ))}
+      </div>
+      <Button className={classes.addButton}>Add a list</Button>
+    </div>
   );
 }
 
