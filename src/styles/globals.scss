@@ -1,0 +1,12 @@
+@use 'reset';
+@use 'variables' as *;
+
+:root {
+  @include load-variables();
+  @include load-theme(light);
+}
+
+body {
+  font-family: get(font-family);
+  color: get(text-color);
+}

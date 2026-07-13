@@ -1,0 +1,41 @@
+@use 'sass:map';
+
+$variables: (
+  font-family: Arial,
+  btn-min-width: 150px,
+  btn-radius: 3px,
+  btn-padding: 5px 10px,
+  board-gap: 20px,
+  col-padding: 7px,
+  card-radius: 5px,
+  card-padding: 15px,
+);
+
+$themes: (
+  light: (
+    primary-color: rgb(112, 185, 255),
+    secondary-color: #fff,
+    text-color: #505052,
+    board-col-width: 300px,
+    board-col-bg: #e6e7e7,
+    board-card-color: #fff,
+  ),
+);
+
+@mixin load-theme($theme-name) {
+  $theme: map.get($themes, $theme-name);
+
+  @each $key, $value in $theme {
+    --#{$key}: #{$value};
+  }
+}
+
+@mixin load-variables() {
+  @each $key, $value in $variables {
+    --#{$key}: #{$value};
+  }
+}
+
+@function get($key) {
+  @return var(--#{$key});
+}

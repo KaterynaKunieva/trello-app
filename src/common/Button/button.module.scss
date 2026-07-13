@@ -1,0 +1,11 @@
+@use '../../styles/variables' as *;
+
+.button {
+  display: block;
+  padding: get(btn-padding);
+  min-width: get(btn-min-width);
+  border-radius: get(btn-radius);
+  border: 1px solid get(text-color);
+  background-color: get(board-card-color);
+  color: get(text-color);
+}

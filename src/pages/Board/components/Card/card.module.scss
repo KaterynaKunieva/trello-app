@@ -1,0 +1,11 @@
+@use '../../../../styles/variables' as *;
+
+.card {
+  background: #fff;
+  padding: get(card-padding);
+  margin: get(col-padding);
+  border-radius: get(card-radius);
+}
+.title {
+  font-weight: 400;
+}
