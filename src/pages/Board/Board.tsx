@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import classes from './board.module.scss';
 import List from './components/List/List';
 import Button from '../../common/Button/Button';
@@ -29,10 +30,13 @@ function Board(): React.JSX.Element {
       ],
     },
   ]);
+  const params = useParams();
 
   return (
     <div className={classes.board}>
-      <h1 className={classes.title}>{title}</h1>
+      <h1 className={classes.title}>
+        {params.board_id} {title}
+      </h1>
       <div className={classes.lists}>
         {lists.map((list) => (
           <List key={list.id} title={list.title} cards={list.cards} />
