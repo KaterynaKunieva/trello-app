@@ -1,0 +1,22 @@
+@use '../../styles/variables' as *;
+
+.boards {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 1000px;
+  max-width: 100%;
+  margin: get(board-gap) auto;
+  padding: 0 get(board-gap);
+  gap: get(board-gap);
+  flex-wrap: wrap;
+}
+
+.board {
+  width: calc((100% - get(board-gap) * (get(board-cols-amount-desk) - 1)) / get(board-cols-amount-desk));
+}
+@media (max-width: 768px) {
+  .board {
+    width: calc((100% - get(board-gap) * (get(board-cols-amount-mob) - 1)) / get(board-cols-amount-mob));
+  }
+}
