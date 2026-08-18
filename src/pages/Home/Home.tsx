@@ -16,7 +16,7 @@ function Home(): React.JSX.Element {
 
   const fetchBoards = useCallback(async () => {
     api
-      .get('/board')
+      .get<{ boards: IBoard[] }>('/board')
       .then((data) => setBoards(data?.boards || []))
       .catch(() => {
         setBoards([]);
