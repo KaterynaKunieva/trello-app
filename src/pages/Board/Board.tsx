@@ -32,7 +32,7 @@ function Board(): React.JSX.Element {
 
   const fetchBoard = useCallback(async (): Promise<void> => {
     try {
-      const data = await api.get(`/board/${params.board_id}`);
+      const data = await api.get<BoardDto>(`/board/${params.board_id}`);
       setBoardView(data);
     } catch (err: unknown) {
       toast.error(`Error fetching board: ${extractErrorMessage(err)}`);
