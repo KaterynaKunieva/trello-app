@@ -1,0 +1,9 @@
+@use '../../../../styles/variables' as *;
+
+.error {
+  color: get(error-color);
+  font-weight: 700;
+  margin: 10px auto;
+  font-size: 10px;
+  text-align: center;
+}

@@ -5,12 +5,16 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  padding: 0 calc(get(icon-padding) + get(icon-width));
 }
 .title {
-  color: get(secondary-color);
   font-weight: 700;
   text-align: center;
-  margin-top: get(board-gap);
+  font-size: 30px;
+  word-wrap: break-word;
+  overflow: hidden;
+  color: get(primary-color);
 }
 .lists {
   flex-grow: 1;
@@ -21,4 +25,9 @@
 }
 .addButton {
   margin: get(board-gap) auto;
+}
+.icons {
+  position: absolute;
+  top: get(icon-padding);
+  right: get(icon-padding);
 }

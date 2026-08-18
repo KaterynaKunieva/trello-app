@@ -9,10 +9,13 @@
   padding: get(card-padding);
   border-radius: get(card-radius);
   height: get(board-card-height);
+  border: 1px solid #000;
 }
 .title {
-  color: get(secondary-color);
   font-size: 14px;
   font-weight: 400;
   text-align: center;
+  word-wrap: break-word;
+  overflow: hidden;
+  color: get(primary-color);
 }

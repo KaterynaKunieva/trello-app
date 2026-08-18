@@ -1,0 +1,32 @@
+@use '../../../../styles/variables' as *;
+
+.button {
+  display: block;
+  margin: 0 auto;
+  &.primary {
+    padding: get(btn-padding);
+    min-width: get(btn-min-width);
+    border-radius: get(btn-radius);
+    border: 1.5px solid get(secondary-color);
+    background-color: get(primary-color);
+    color: get(secondary-color);
+  }
+  &.secondary {
+    padding: get(btn-padding);
+    min-width: get(btn-min-width);
+    border-radius: get(btn-radius);
+    border: 1.5px solid get(primary-color);
+    background-color: transparent;
+    color: get(primary-color);
+  }
+  &.ghost {
+    padding: 0;
+    width: 25px;
+    border: none;
+    background-color: transparent;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    background: #adadad59;
+  }
+}
