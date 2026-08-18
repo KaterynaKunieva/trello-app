@@ -12,16 +12,21 @@ $variables: (
   board-cols-amount-desk: 4,
   board-cols-amount-mob: 2,
   board-card-height: 100px,
+  modal-min-width: 500px,
+  icon-padding: 10px,
+  icon-width: 25px,
+  appearing-time: 0.3s,
 );
 
 $themes: (
   light: (
-    primary-color: rgb(112, 185, 255),
+    primary-color: #000,
     secondary-color: #fff,
     text-color: #505052,
     board-col-width: 300px,
     board-col-bg: #e6e7e7,
     board-card-color: #fff,
+    error-color: red,
   ),
 );
 

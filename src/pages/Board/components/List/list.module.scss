@@ -1,5 +1,12 @@
 @use '../../../../styles/variables' as *;
 
+.deleteBtn {
+  position: absolute;
+  bottom: get(icon-padding);
+  right: get(icon-padding);
+  opacity: 0;
+  transition: opacity get(appearing-time);
+}
 .column {
   width: get(board-col-width);
   max-width: 100%;
@@ -7,14 +14,22 @@
   flex-shrink: 0;
   background-color: get(board-col-bg);
   border-radius: get(card-radius);
+  position: relative;
+  &:hover .deleteBtn {
+    opacity: 1;
+  }
+  padding-bottom: get(icon-width);
 }
 .title {
   font-size: 16px;
   font-weight: 600;
   line-height: 120%;
   margin: get(board-gap) get(card-padding);
-  color: get(text-color);
+  color: get(primary-color);
   text-transform: uppercase;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-align: center;
 }
 .addButton {
   margin: get(board-gap) auto;

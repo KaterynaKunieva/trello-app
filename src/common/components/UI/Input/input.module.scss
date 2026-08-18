@@ -1,0 +1,27 @@
+@use '../../../../styles/variables' as *;
+
+.input {
+  border: 1px solid get(text-color);
+  border-radius: 2px;
+  padding: 5px 10px;
+  color: get(text-color);
+  font-weight: 400;
+  margin-top: 5px;
+  &[type='color'] {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    &::-webkit-color-swatch,
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+      border: none;
+    }
+  }
+}
+.label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: get(primary-color);
+}
