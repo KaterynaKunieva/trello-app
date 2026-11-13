@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Id } from '../../../common/interfaces/common';
-import { getChangedFields } from '../../../common/utils/objects';
-import { useAppSelector } from '../../../app/hooks';
 import { CreateListDto } from '../../lists/types/ListDtos';
-import { CreateCardDto, NewCardTargetInfo, UpdateCardDto } from '../../cards/types/CardDtos';
+import { CreateCardDto } from '../../cards/types/CardDtos';
 import { BoardModalsProps } from '../components/BoardModals/BoardModals';
 
 export interface BoardModalActions {
@@ -12,12 +10,11 @@ export interface BoardModalActions {
   deleteList: (id: Id) => Promise<void>;
   createCard: (dto: CreateCardDto) => Promise<void>;
   deleteCard: (id: Id) => Promise<void>;
-  updateCard: (data: UpdateCardDto) => Promise<void>;
 }
 
 export interface UseBoardModalsReturn {
   openCreateListModal: () => void;
-  openCreateCardModal: (info: NewCardTargetInfo) => void;
+  openCreateCardModal: (listId: Id) => void;
   openDeleteBoardModal: () => void;
   setListIdToDelete: (id: Id) => void;
   setCardIdToDelete: (id: Id) => void;
@@ -29,7 +26,7 @@ export interface UseBoardModalsReturn {
 
 export function useBoardModals(board: BoardModalActions): UseBoardModalsReturn {
   const [isCreateListModalOpen, setIsCreateListModalOpen] = useState(false);
-  const [newCardListInfo, setNewCardListInfo] = useState<NewCardTargetInfo | null>(null);
+  const [newCardListId, setNewCardListId] = useState<Id | null>(null);
 
   const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
   const [listIdToDelete, setListIdToDelete] = useState<Id>(Number.NaN);
@@ -38,8 +35,6 @@ export function useBoardModals(board: BoardModalActions): UseBoardModalsReturn {
   const [isBoardDeleting, setIsBoardDeleting] = useState(false);
   const [isListDeleting, setIsListDeleting] = useState(false);
   const [isCardDeleting, setIsCardDeleting] = useState(false);
-
-  const updateCardInfo = useAppSelector((state) => state.currentCard.card);
 
   const handleDeleteBoard = async (): Promise<void> => {
     setIsBoardDeleting(true);
@@ -73,34 +68,13 @@ export function useBoardModals(board: BoardModalActions): UseBoardModalsReturn {
   };
 
   const handleCreateCard = async (data: CreateCardDto): Promise<void> => {
-    if (!newCardListInfo) return;
-    await board.createCard({ ...data, ...newCardListInfo });
-  };
-
-  const handleUpdateCard = async (data: CreateCardDto): Promise<void> => {
-    if (!updateCardInfo) return;
-    const initialValues = {
-      title: updateCardInfo.title ?? '',
-      position: updateCardInfo.position ?? 0,
-      list_id: updateCardInfo.list_id ?? '',
-      description: updateCardInfo.description ?? '',
-      custom: updateCardInfo.custom ?? { deadline: '' },
-    };
-    const changedFields = getChangedFields(initialValues, data);
-    if (Object.keys(changedFields).length === 0) {
-      return;
-    }
-    const updatePayload = {
-      ...changedFields,
-      id: updateCardInfo.id,
-      list_id: updateCardInfo.list_id,
-    };
-    await board.updateCard(updatePayload);
+    if (newCardListId === null) return;
+    await board.createCard({ ...data, list_id: newCardListId });
   };
 
   return {
     openCreateListModal: (): void => setIsCreateListModalOpen(true),
-    openCreateCardModal: (info: NewCardTargetInfo): void => setNewCardListInfo(info),
+    openCreateCardModal: (listId: Id): void => setNewCardListId(listId),
     openDeleteBoardModal: (): void => setIsDeleteBoardModalOpen(true),
     setListIdToDelete,
     setCardIdToDelete,
@@ -111,10 +85,9 @@ export function useBoardModals(board: BoardModalActions): UseBoardModalsReturn {
       isCreateListOpen: isCreateListModalOpen,
       onCloseCreateList: (): void => setIsCreateListModalOpen(false),
       onCreateList: handleCreateList,
-      isCreateCardOpen: newCardListInfo !== null,
-      onCloseCreateCard: (): void => setNewCardListInfo(null),
+      isCreateCardOpen: newCardListId !== null,
+      onCloseCreateCard: (): void => setNewCardListId(null),
       onCreateCard: handleCreateCard,
-      onUpdateCard: handleUpdateCard,
       isDeleteBoardOpen: isDeleteBoardModalOpen,
       onCloseDeleteBoard: (): void => setIsDeleteBoardModalOpen(false),
       onConfirmDeleteBoard: handleDeleteBoard,

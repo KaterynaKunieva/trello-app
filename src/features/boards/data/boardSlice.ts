@@ -8,6 +8,7 @@ import { CreateListDto, UpdateListDto } from '../../lists/types/ListDtos';
 import { listService } from '../../lists/data/listService';
 import { cardService } from '../../cards/data/cardService';
 import { CreateCardDto, UpdateCardDto, UpdateCardPositionDto } from '../../cards/types/CardDtos';
+import ICard from '../../cards/types/ICard';
 
 interface BoardState {
   isLoading: boolean;
@@ -26,7 +27,10 @@ export const fetchBoard = createAsyncThunk<IBoard, Id>('board/fetchBoard', async
 
   const normalizedLists = normalizePositions(data.lists || []).map((list) => ({
     ...list,
-    cards: normalizePositions(list.cards || []),
+    cards: normalizePositions(list.cards || []).map((card) => ({
+      ...card,
+      list_id: list.id,
+    })),
   }));
 
   const sortedBoard = {
@@ -119,11 +123,18 @@ const isBoardSettled = (action: PayloadAction): boolean =>
   isBoardAction(action) && (isFulfilled(action) || isRejected(action));
 
 const boardSlice = createSlice({
-  name: 'boardSlice',
+  name: 'board',
   initialState,
   reducers: {
     setBoard: (state, action) => {
       state.board = action.payload;
+    },
+  },
+  selectors: {
+    selectCardById: (state, cardId?: string): ICard | null => {
+      if (!cardId || !state.board) return null;
+      const targetList = state.board.lists.find((list) => list.cards.some((c) => String(c.id) === cardId));
+      return targetList?.cards.find((c) => String(c.id) === cardId) ?? null;
     },
   },
   extraReducers: (builder) => {
@@ -144,5 +155,6 @@ const boardSlice = createSlice({
   },
 });
 
-export default boardSlice.reducer;
 export const { setBoard } = boardSlice.actions;
+export const { selectCardById } = boardSlice.selectors;
+export default boardSlice.reducer;

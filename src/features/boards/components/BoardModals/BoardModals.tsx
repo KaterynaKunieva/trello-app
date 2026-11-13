@@ -5,8 +5,6 @@ import CreateList from '../../../lists/components/CreateList/CreateList';
 import CardForm from '../../../cards/components/CardForm/CardForm';
 import { CreateListDto } from '../../../lists/types/ListDtos';
 import { CreateCardDto } from '../../../cards/types/CardDtos';
-import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
-import { closeCardModal } from '../../../cards/data/currentCardSlice';
 
 export interface BoardModalsProps {
   isCreateListOpen: boolean;
@@ -16,8 +14,6 @@ export interface BoardModalsProps {
   isCreateCardOpen: boolean;
   onCloseCreateCard: () => void;
   onCreateCard: (data: CreateCardDto) => Promise<void>;
-
-  onUpdateCard: (data: CreateCardDto) => Promise<void>;
 
   isDeleteBoardOpen: boolean;
   onCloseDeleteBoard: () => void;
@@ -42,7 +38,6 @@ function BoardModals({
   isCreateCardOpen,
   onCloseCreateCard,
   onCreateCard,
-  onUpdateCard,
   isDeleteBoardOpen,
   onCloseDeleteBoard,
   onConfirmDeleteBoard,
@@ -56,22 +51,6 @@ function BoardModals({
   onConfirmDeleteCard,
   isDeleteCardLoading,
 }: Readonly<BoardModalsProps>): React.JSX.Element {
-  const updateCardInfo = useAppSelector((state) => state.currentCard.card);
-  const dispatch = useAppDispatch();
-  const cardEditInitialValues = updateCardInfo
-    ? {
-        title: updateCardInfo.title ?? '',
-        position: updateCardInfo.position ?? 0,
-        list_id: updateCardInfo.list_id ?? '',
-        description: updateCardInfo.description ?? '',
-        custom: updateCardInfo.custom ?? { deadline: '' },
-      }
-    : undefined;
-
-  const onCloseUpdateCard = (): void => {
-    dispatch(closeCardModal());
-  };
-
   return (
     <>
       <Modal isOpen={isCreateListOpen} close={onCloseCreateList}>
@@ -80,10 +59,6 @@ function BoardModals({
 
       <Modal isOpen={isCreateCardOpen} close={onCloseCreateCard}>
         <CardForm onSubmit={onCreateCard} onSuccess={onCloseCreateCard} />
-      </Modal>
-
-      <Modal isOpen={Boolean(updateCardInfo)} close={onCloseUpdateCard}>
-        <CardForm initialValues={cardEditInitialValues} onSubmit={onUpdateCard} onSuccess={onCloseUpdateCard} />
       </Modal>
 
       <ConfirmationModal

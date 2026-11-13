@@ -58,13 +58,7 @@ function List({
     const isLastPlaceholder = cardUseDrag.placeholderIndex === list.cards.length;
 
     const cardJSX = (
-      <Card
-        key={card.id}
-        card={{ ...card, list_id: list.id }}
-        onDelete={onDeleteCard}
-        onUpdate={onUpdateCard}
-        isDeleting={isCardDeleting}
-      />
+      <Card key={card.id} card={card} onDelete={onDeleteCard} onUpdate={onUpdateCard} isDeleting={isCardDeleting} />
     );
 
     return (
