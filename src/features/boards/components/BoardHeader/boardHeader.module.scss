@@ -1,0 +1,24 @@
+@use '../../../../styles/variables' as *;
+
+.title {
+  font-weight: 700;
+  text-align: center;
+  font-size: get(font-size-title);
+  word-wrap: break-word;
+  overflow: hidden;
+  color: get(primary-color);
+}
+
+.label {
+  margin-bottom: 0 !important;
+}
+
+.icons {
+  position: absolute;
+  top: get(icon-padding);
+  right: get(icon-padding);
+}
+
+.deleteBtn {
+  margin: 0;
+}

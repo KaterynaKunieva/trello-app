@@ -20,8 +20,11 @@
 }
 .label {
   display: block;
-  margin-bottom: 10px;
-  font-size: 12px;
+  margin-bottom: get(icon-padding);
+  font-size: get(font-size-label);
   font-weight: 600;
   color: get(primary-color);
+  &:has([type='color']) {
+    display: inline-block;
+  }
 }

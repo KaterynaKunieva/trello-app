@@ -1,0 +1,16 @@
+@use '../../../../styles/variables' as *;
+
+.lists {
+  flex-grow: 1;
+  display: flex;
+  gap: get(board-gap);
+  overflow-x: auto;
+  padding: get(board-gap);
+}
+
+.emptyMessage {
+  text-align: center;
+  margin: auto;
+  font-size: get(font-size-message);
+  color: get(primary-color);
+}

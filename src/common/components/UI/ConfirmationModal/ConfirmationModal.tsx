@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React from 'react';
+import classes from './confirmationModal.module.scss';
 import Modal from '../Modal/Modal';
 import Button from '../Button/Button';
-import Error from '../Error/Error';
 
 interface Props {
   title: string;
@@ -9,8 +9,8 @@ interface Props {
   close: () => void;
   confirmCallback: () => Promise<void>;
   cancelCallback?: () => void;
-  error: string;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
 function ConfirmationModal({
@@ -19,26 +19,29 @@ function ConfirmationModal({
   close,
   confirmCallback,
   cancelCallback,
-  error,
   disabled = false,
+  isLoading = false,
 }: Props): React.JSX.Element {
-  const confirm = useCallback(async () => {
-    await confirmCallback();
-    close();
-  }, [close, confirmCallback]);
+  const confirm = async (): Promise<void> => {
+    try {
+      await confirmCallback();
+      close();
+    } catch {
+      // Keep modal open if deletion failed
+    }
+  };
 
-  const cancel = useCallback(() => {
+  const cancel = (): void => {
     if (cancelCallback) {
       cancelCallback();
     }
     close();
-  }, [close, cancelCallback]);
+  };
 
   return (
-    <Modal isOpen={isOpen} setIsOpenFalse={cancel}>
-      <p style={{ textAlign: 'center', marginBottom: '10px' }}>{title}</p>
-      <Error>{error}</Error>
-      <Button onClick={confirm} disabled={disabled}>
+    <Modal isOpen={isOpen} close={cancel}>
+      <p className={classes.title}>{title}</p>
+      <Button onClick={confirm} disabled={disabled || isLoading}>
         Confirm
       </Button>
     </Modal>

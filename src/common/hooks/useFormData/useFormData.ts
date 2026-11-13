@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, ChangeEvent, FocusEvent, Dispatch, SetStateAction } from 'react';
+import { useState, useMemo, useCallback, ChangeEvent, FocusEvent } from 'react';
 import { InputValidationRules, FormElement, FormConfig, ValidationErrors } from './types';
 import { getByPath, getPartialObjByPath, setByPath, applyToAllValues } from '../../utils/objects';
 import { convertToBase64 } from '../../utils/base64';
@@ -10,20 +10,17 @@ export function useFormData<T extends Record<string, unknown>>(
   values: T;
   errors: ValidationErrors<T>;
   isValidForm: boolean;
-  formError: string;
   validateField: (name: string) => boolean;
   validateForm: () => boolean;
   onInputChange: (e: ChangeEvent<FormElement>) => Promise<void>;
   onBlur: (e: FocusEvent<FormElement>) => void;
   getPartialValue: (name: string) => T;
   resetData: (newValues: T | ((prev: T) => T)) => void;
-  setFormError: Dispatch<SetStateAction<string>>;
   setFieldError: (name: string, err: string) => void;
   cleanErrors: () => void;
 } {
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<ValidationErrors<T>>({});
-  const [formError, setFormError] = useState('');
 
   function isEmptyValue(value: unknown): boolean {
     return (
@@ -47,16 +44,15 @@ export function useFormData<T extends Record<string, unknown>>(
     });
   }, []);
 
-  const cleanErrors = useCallback(() => {
+  const cleanErrors = (): void => {
     setErrors({});
-    setFormError('');
-  }, []);
+  };
 
-  const setFieldError = useCallback((name: string, err: string): void => {
+  const setFieldError = (name: string, err: string): void => {
     setErrors((prev) => setByPath(prev, name, err));
-  }, []);
+  };
 
-  const getPartialValue = useCallback((name: string): T => getPartialObjByPath(values, name), [values]);
+  const getPartialValue = (name: string): T => getPartialObjByPath(values, name);
 
   const isValidForm = useMemo((): boolean => {
     let isValid = true;
@@ -69,52 +65,49 @@ export function useFormData<T extends Record<string, unknown>>(
     return isValid;
   }, [errors]);
 
-  const validateField = useCallback(
-    (name: string): boolean => {
-      const { rules } = getByPath<{ rules: InputValidationRules }>(config, name);
-      const value = getByPath(values, name);
+  const validateField = (name: string): boolean => {
+    const { rules } = getByPath<{ rules: InputValidationRules }>(config, name);
+    const value = getByPath(values, name);
 
-      if (!rules) {
-        return true;
+    if (!rules) {
+      return true;
+    }
+
+    let isValid = true;
+
+    if (rules.required && isEmptyValue(value)) {
+      setErrors((prev) => setByPath(prev, name, `${name} is required`));
+      isValid = false;
+    } else if (rules.pattern) {
+      let pattern: RegExp;
+      let message: string;
+      if (rules.pattern instanceof RegExp) {
+        pattern = rules.pattern;
+        message = `Invalid ${name}`;
+      } else {
+        pattern = rules.pattern.value;
+        message = rules.pattern.message;
       }
-
-      let isValid = true;
-
-      if (rules.required && isEmptyValue(value)) {
-        setErrors((prev) => setByPath(prev, name, `${name} is required`));
+      if (!pattern.test(value)) {
+        setErrors((prev) => setByPath(prev, name, message));
         isValid = false;
-      } else if (rules.pattern) {
-        let pattern: RegExp;
-        let message: string;
-        if (rules.pattern instanceof RegExp) {
-          pattern = rules.pattern;
-          message = `Invalid ${name}`;
-        } else {
-          pattern = rules.pattern.value;
-          message = rules.pattern.message;
-        }
-        if (!pattern.test(value)) {
-          setErrors((prev) => setByPath(prev, name, message));
-          isValid = false;
-        }
       }
+    }
 
-      if (typeof rules?.min === 'number' && Number(value) < rules.min) {
-        isValid = false;
-        setErrors((prev) => setByPath(prev, name, `${name} must be at least ${rules.min}`));
-      }
+    if (typeof rules?.min === 'number' && Number(value) < rules.min) {
+      isValid = false;
+      setErrors((prev) => setByPath(prev, name, `${name} must be at least ${rules.min}`));
+    }
 
-      if (typeof rules?.max === 'number' && Number(value) > rules.max) {
-        isValid = false;
-        setErrors((prev) => setByPath(prev, name, `${name} must be at most ${rules.max}`));
-      }
+    if (typeof rules?.max === 'number' && Number(value) > rules.max) {
+      isValid = false;
+      setErrors((prev) => setByPath(prev, name, `${name} must be at most ${rules.max}`));
+    }
 
-      return isValid;
-    },
-    [config, values]
-  );
+    return isValid;
+  };
 
-  const validateForm = useCallback((): boolean => {
+  const validateForm = (): boolean => {
     let isValid = true;
     applyToAllValues(values, (path) => {
       if (isValid && !validateField(path)) {
@@ -122,53 +115,43 @@ export function useFormData<T extends Record<string, unknown>>(
       }
     });
     return isValid;
-  }, [values, validateField]);
+  };
 
-  const onInputChange = useCallback(
-    async (e: ChangeEvent<FormElement>): Promise<void> => {
-      const { name, type } = e.target;
+  const onInputChange = async (e: ChangeEvent<FormElement>): Promise<void> => {
+    const { name, type } = e.target;
 
-      // clean error message
-      setFormError('');
-      setFieldError(e.target.name, '');
+    setFieldError(e.target.name, '');
 
-      if (type === 'file') {
-        const inputEl = e.target as HTMLInputElement;
-        const file = inputEl.files?.[0] || '';
-        if (!file) return;
-        try {
-          const base64String = await convertToBase64(file);
-          setValues((prev) => setByPath(prev, name, base64String));
-        } catch (err: unknown) {
-          setErrors((prev) => setByPath(prev, name, `Error loading image: ${err}`));
-        }
-      } else {
-        // update state
-        setValues((prev) => setByPath(prev, name, e.target.value));
+    if (type === 'file') {
+      const inputEl = e.target as HTMLInputElement;
+      const file = inputEl.files?.[0] || '';
+      if (!file) return;
+      try {
+        const base64String = await convertToBase64(file);
+        setValues((prev) => setByPath(prev, name, base64String));
+      } catch (err: unknown) {
+        setErrors((prev) => setByPath(prev, name, `Error loading image: ${err}`));
       }
-    },
-    [setFieldError]
-  );
+    } else {
+      // update state
+      setValues((prev) => setByPath(prev, name, e.target.value));
+    }
+  };
 
-  const onBlur = useCallback(
-    (e: FocusEvent<FormElement>): void => {
-      validateField(e.target.name);
-    },
-    [validateField]
-  );
+  const onBlur = (e: FocusEvent<FormElement>): void => {
+    validateField(e.target.name);
+  };
 
   return {
     values,
     errors,
     isValidForm,
-    formError,
     validateField,
     validateForm,
     onInputChange,
     onBlur,
     getPartialValue,
     resetData,
-    setFormError,
     setFieldError,
     cleanErrors,
   };

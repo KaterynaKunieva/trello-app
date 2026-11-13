@@ -1,0 +1,6 @@
+@use '../../../../styles/variables' as *;
+
+.placeholder {
+  background-color: get(primary-color);
+  flex-shrink: 0;
+}

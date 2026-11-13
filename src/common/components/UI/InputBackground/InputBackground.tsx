@@ -1,16 +1,15 @@
-import React, { useState, useCallback, InputHTMLAttributes } from 'react';
+import React, { useState, InputHTMLAttributes } from 'react';
 import classes from './inputBackground.module.scss';
 import Input from '../Input/Input';
-import InputImage from '../InputImage/InputImage';
 import Modal from '../Modal/Modal';
-import EditButton from '../../ICONS/EditButton/EditButton';
-import ArrowButton from '../../ICONS/ArrowButton/ArrowButton';
+import { EditButton, ArrowButton } from '../../icons';
 import Button from '../Button/Button';
-import Error from '../Error/Error';
+import TextError from '../TextError/TextError';
+import { IMAGE_MIME_TYPES } from '../../../constants';
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
-  error: string;
+  error?: string;
   submit: (name: string) => Promise<boolean>;
   discardChanges: () => void;
   value: string;
@@ -20,24 +19,24 @@ function InputBackground({ name, error, submit, value, discardChanges, ...props 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputType, setInputType] = useState<'color' | 'file' | null>(null);
 
-  const onSubmit = useCallback(async (): Promise<void> => {
+  const onSubmit = async (): Promise<void> => {
     const res = await submit(name);
     if (res) {
       setInputType(null);
       setIsModalOpen(false);
     }
-  }, [submit, name]);
+  };
 
-  const close = useCallback((): void => {
+  const close = (): void => {
     discardChanges();
     setInputType(null);
     setIsModalOpen(false);
-  }, [discardChanges]);
+  };
 
-  const returnBack = useCallback((): void => {
+  const returnBack = (): void => {
     discardChanges();
     setInputType(null);
-  }, [discardChanges]);
+  };
 
   return (
     <div>
@@ -45,16 +44,16 @@ function InputBackground({ name, error, submit, value, discardChanges, ...props 
         <p>Background</p>
         <EditButton onClick={(): void => setIsModalOpen(true)} />
       </div>
-      <Modal isOpen={isModalOpen} setIsOpenFalse={close} shadow={false} position="right">
+      <Modal isOpen={isModalOpen} close={close} shadow={false} position="right">
         {inputType ? (
           <>
-            <ArrowButton style={{ margin: 0 }} onClick={returnBack} />
+            <ArrowButton className={classes.backButton} onClick={returnBack} />
             {inputType === 'color' ? (
               <Input type={inputType} name={name} value={value} {...props} />
             ) : (
-              <InputImage name={name} {...props} />
+              <Input type="file" name={name} accept={IMAGE_MIME_TYPES} {...props} />
             )}
-            {error && <Error>{error}</Error>}
+            {error && <TextError>{error}</TextError>}
             <Button onClick={onSubmit}>Update</Button>
           </>
         ) : (

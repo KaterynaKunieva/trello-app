@@ -9,7 +9,7 @@ export function dateTimeIntoInputValue(date: Date): string {
   return `${YY}-${MM}-${DD}T${hh}:${mm}`;
 }
 
-// "YYYY-MM-DDThh:mm" =>  "YYYY-MM-DD hh:mm"
+// "YYYY-MM-DDThh:mm" => "YYYY-MM-DD hh:mm"
 export function inputValueIntoDateTimeApi(value: string): string {
   return value.replace('T', ' ');
 }

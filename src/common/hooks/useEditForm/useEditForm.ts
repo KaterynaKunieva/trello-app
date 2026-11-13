@@ -1,20 +1,15 @@
-import { FocusEvent, KeyboardEvent, useCallback, ChangeEvent, useEffect, useRef } from 'react';
-import { toast } from 'sonner';
+import { useState, FocusEvent, KeyboardEvent, ChangeEvent, useEffect, useRef } from 'react';
 import { useFormData, FormConfig } from '../useFormData';
-import useFormSubmit from '../useFormSubmit/useFormSubmit';
-import { extractErrorMessage } from '../../../api/utils';
 import { ValidationErrors } from '../useFormData/types';
 import { getByPath, deepClone } from '../../utils/objects';
 
 function useEditForm<T extends Record<string, unknown>>(
   initialValues: T,
   config: FormConfig<T>,
-  fetchData: () => Promise<void>,
   updateData: (data: T) => Promise<void>
 ): {
   values: T;
   errors: ValidationErrors<T>;
-  formError: string;
   isLoading: boolean;
   onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   submit: (e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement> | string) => Promise<boolean>;
@@ -22,19 +17,12 @@ function useEditForm<T extends Record<string, unknown>>(
 } {
   const initialValuesRef = useRef<T>(deepClone(initialValues));
 
-  const {
-    values,
-    errors,
-    formError,
-    onInputChange,
-    validateField,
-    getPartialValue,
-    resetData,
-    setFormError,
-    cleanErrors,
-  } = useFormData<T>(initialValues, config);
+  const { values, errors, onInputChange, validateField, getPartialValue, resetData, cleanErrors } = useFormData<T>(
+    initialValues,
+    config
+  );
 
-  const { isLoading, submitWrapper } = useFormSubmit(updateData);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const currentJson = JSON.stringify(initialValuesRef.current);
@@ -47,41 +35,38 @@ function useEditForm<T extends Record<string, unknown>>(
     }
   }, [initialValues, resetData]);
 
-  const discardChanges = useCallback(() => {
+  const discardChanges = (): void => {
     resetData(deepClone(initialValuesRef.current));
     cleanErrors();
-  }, [resetData, cleanErrors]);
+  };
 
-  const submit = useCallback(
-    async (e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement> | string): Promise<boolean> => {
-      const name = typeof e === 'string' ? e : e.currentTarget.name;
-      if (!validateField(name)) {
-        return false;
-      }
-      const newData = getByPath<T>(values, name);
-      const oldData = getByPath<T>(initialValuesRef.current, name);
-      if (newData === oldData) {
-        return true;
-      }
+  const submit = async (
+    e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement> | string
+  ): Promise<boolean> => {
+    const name = typeof e === 'string' ? e : e?.currentTarget?.name || '';
+    if (!name || !validateField(name)) {
+      return false;
+    }
+    const newData = getByPath<T>(values, name);
+    const oldData = getByPath<T>(initialValuesRef.current, name);
+    if (newData === oldData) {
+      return true;
+    }
 
-      try {
-        await submitWrapper(getPartialValue(name));
-        await fetchData();
-        toast.success(`Updated successfully`);
-        return true;
-      } catch (err: unknown) {
-        setFormError(`Error updating ${extractErrorMessage(err)}`);
-        toast.error(`Error updating ${extractErrorMessage(err)}`);
-        return false;
-      }
-    },
-    [validateField, submitWrapper, setFormError, fetchData, getPartialValue, values]
-  );
+    setIsLoading(true);
+    try {
+      await updateData(getPartialValue(name));
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     values,
     errors,
-    formError,
     isLoading,
     onInputChange,
     submit,

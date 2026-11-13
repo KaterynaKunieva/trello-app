@@ -21,12 +21,12 @@
   }
   &.ghost {
     padding: 0;
-    width: 25px;
+    width: get(icon-width);
     border: none;
     background-color: transparent;
   }
   &:disabled {
     cursor: not-allowed;
-    background: #adadad59;
+    background: get(btn-disabled-bg);
   }
 }

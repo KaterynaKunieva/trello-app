@@ -1,0 +1,45 @@
+.container {
+  position: relative;
+
+  & .coordinates {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+  }
+
+  & > .movingEl {
+    display: none;
+    pointer-events: none;
+    user-select: none;
+    position: absolute;
+    top: var(--dnd-y, 0);
+    left: var(--dnd-x, 0);
+    z-index: 100;
+    cursor: grabbing;
+  }
+
+  & > .baseEl {
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &.dragging {
+    position: static;
+
+    & > .movingEl {
+      display: block;
+      position: fixed;
+      transform: rotate(3deg);
+      z-index: 101;
+      cursor: grabbing;
+    }
+
+    & > .baseEl {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+  }
+}
