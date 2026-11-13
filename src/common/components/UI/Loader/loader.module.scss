@@ -1,0 +1,32 @@
+@use '../../../../styles/variables' as *;
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: get(board-gap);
+  margin: auto;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid get(spinner-border-color);
+  border-top-color: get(primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.text {
+  font-size: get(font-size-list-title);
+  color: get(text-color);
+  font-weight: 500;
+}

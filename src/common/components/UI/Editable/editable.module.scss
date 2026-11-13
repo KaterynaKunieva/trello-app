@@ -1,21 +1,42 @@
 @use '../../../../styles/variables' as *;
 
+.container {
+  margin: 0 auto;
+  padding: 0 get(icon-padding);
+  max-width: 100%;
+}
+
 .editable {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: get(board-gap);
 
   & .edit {
+    opacity: 0;
     flex-shrink: 0;
+    margin: 0;
   }
+  & .close {
+    flex-shrink: 0;
+    margin: 0;
+  }
+  &:hover .edit {
+    opacity: 1;
+  }
+}
 
-  // & .edit {
-  //   flex-shrink: 0;
-  //   opacity: 0;
-  //   transition: opacity get(appearing-time);
-  // }
-  // &:hover .edit {
-  //   opacity: 1;
-  // }
+.inputLabel {
+  margin-bottom: 0 !important;
+  width: 100%;
+}
+
+.inputField {
+  padding: 0 !important;
+  border: none;
+  border-bottom: 1px solid get(primary-color);
+  background: transparent;
+  text-align: left !important;
+  margin-bottom: 0;
+  width: 100%;
 }

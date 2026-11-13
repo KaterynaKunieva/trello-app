@@ -1,9 +1,6 @@
-import { useCallback, SyntheticEvent, ChangeEvent, FocusEvent } from 'react';
-import { toast } from 'sonner';
+import { useState, SyntheticEvent, ChangeEvent, FocusEvent } from 'react';
 import { useFormData, FormConfig } from '../useFormData';
 import { FormElement, ValidationErrors } from '../useFormData/types';
-import useFormSubmit from '../useFormSubmit/useFormSubmit';
-import { extractErrorMessage } from '../../../api/utils';
 
 function useCreateForm<T extends Record<string, unknown>>(
   initialValues: T,
@@ -12,44 +9,33 @@ function useCreateForm<T extends Record<string, unknown>>(
 ): {
   values: T;
   errors: ValidationErrors<T>;
-  formError: string;
   isValidForm: boolean;
   isLoading: boolean;
   onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur: (e: FocusEvent<FormElement>) => void;
-  submit: (e?: SyntheticEvent) => Promise<boolean>;
+  submit: (e?: SyntheticEvent) => Promise<void>;
 } {
-  const { values, errors, onInputChange, onBlur, validateForm, isValidForm, formError, setFormError } = useFormData<T>(
-    initialValues,
-    config
-  );
+  const { values, errors, onInputChange, onBlur, validateForm, isValidForm } = useFormData<T>(initialValues, config);
 
-  const { isLoading, submitWrapper } = useFormSubmit(request);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const submit = useCallback(
-    async (e?: SyntheticEvent): Promise<boolean> => {
-      e?.preventDefault();
-      setFormError('');
-      if (!validateForm()) {
-        return false;
-      }
-      try {
-        await submitWrapper(values);
-        toast.success(`Created successfully`);
-        return true;
-      } catch (err: unknown) {
-        setFormError(extractErrorMessage(err));
-        toast.error(`Error during creation: ${extractErrorMessage(err)}`);
-        return false;
-      }
-    },
-    [values, validateForm, submitWrapper, setFormError]
-  );
+  const submit = async (e?: SyntheticEvent): Promise<void> => {
+    e?.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await request(values);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     values,
     errors,
-    formError,
     isValidForm,
     isLoading,
     onInputChange,

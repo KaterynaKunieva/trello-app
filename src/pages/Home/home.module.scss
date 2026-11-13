@@ -4,19 +4,33 @@
   display: flex;
   align-items: stretch;
   justify-content: center;
-  width: 1000px;
+  width: get(boards-container-width);
   max-width: 100%;
   margin: get(board-gap) auto;
   padding: 0 get(board-gap);
   gap: get(board-gap);
   flex-wrap: wrap;
+  min-height: get(boards-min-height);
 }
 
 .board {
   width: calc((100% - get(board-gap) * (get(board-cols-amount-desk) - 1)) / get(board-cols-amount-desk));
-}
-@media (max-width: 768px) {
-  .board {
+
+  @include mobile {
     width: calc((100% - get(board-gap) * (get(board-cols-amount-mob) - 1)) / get(board-cols-amount-mob));
   }
+}
+
+.message {
+  font-size: get(font-size-message);
+  color: get(error-color);
+  text-align: center;
+  margin: auto;
+}
+
+.emptyMessage {
+  text-align: center;
+  margin: get(icon-padding) auto;
+  font-size: get(font-size-message);
+  color: get(primary-color);
 }

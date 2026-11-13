@@ -1,20 +1,24 @@
 @use '../../../../styles/variables' as *;
 
+.backButton {
+  margin: 0;
+}
+
 .backgroundOptions {
   display: flex;
   flex-wrap: wrap;
-  margin: 10px 0;
+  margin: get(icon-padding) 0;
 }
 .showTextOnHover {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  color: #000;
+  color: get(primary-color);
   gap: 2px;
   position: relative;
   & > p {
     position: absolute;
-    font-size: 10px;
+    font-size: get(font-size-small);
     top: 50%;
     right: 100%;
     opacity: 0;

@@ -1,0 +1,33 @@
+@use '../../../../styles/variables' as *;
+
+.card {
+  cursor: pointer;
+  position: relative;
+  background: get(board-card-color);
+  padding: get(icon-padding);
+  padding-bottom: calc(get(card-padding) + get(icon-width));
+  margin: get(col-padding);
+  border-radius: get(card-radius);
+  display: flex;
+  justify-content: space-between;
+
+  .deleteBtn {
+    flex-shrink: 0;
+    opacity: 0;
+  }
+  &:hover .deleteBtn {
+    opacity: 1;
+  }
+  &.disabled {
+    pointer-events: none;
+  }
+}
+
+.title {
+  font-weight: 600;
+  font-size: get(font-size-card-title);
+  word-wrap: break-word;
+  overflow: hidden;
+  color: get(primary-color);
+  text-transform: uppercase;
+}

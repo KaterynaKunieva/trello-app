@@ -1,11 +1,22 @@
 @use 'sass:map';
 
+$breakpoint-mobile: 768px;
+
+@mixin mobile {
+  @media (max-width: $breakpoint-mobile) {
+    @content;
+  }
+}
+
 $variables: (
   font-family: Arial,
   btn-min-width: 150px,
   btn-radius: 3px,
   btn-padding: 5px 10px,
+  btn-disabled-bg: #adadad59,
   board-gap: 20px,
+  boards-container-width: 1000px,
+  boards-min-height: 200px,
   col-padding: 7px,
   card-radius: 5px,
   card-padding: 15px,
@@ -13,9 +24,17 @@ $variables: (
   board-cols-amount-mob: 2,
   board-card-height: 100px,
   modal-min-width: 500px,
+  modal-overlay-bg: rgba(0, 0, 0, 0.5),
+  spinner-border-color: rgba(0, 0, 0, 0.1),
   icon-padding: 10px,
   icon-width: 25px,
   appearing-time: 0.3s,
+  font-size-title: 30px,
+  font-size-message: 18px,
+  font-size-list-title: 16px,
+  font-size-card-title: 14px,
+  font-size-label: 12px,
+  font-size-small: 10px,
 );
 
 $themes: (

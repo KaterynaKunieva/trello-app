@@ -1,10 +1,10 @@
 import React, { PropsWithChildren } from 'react';
 import classes from './modal.module.scss';
-import CloseButton from '../../ICONS/CloseButton/CloseButton';
+import { CloseButton } from '../../icons';
 
 interface Props {
   isOpen: boolean;
-  setIsOpenFalse: () => void;
+  close: () => void;
   className?: string;
   shadow?: boolean;
   position?: 'center' | 'right' | 'left';
@@ -12,7 +12,7 @@ interface Props {
 
 function Modal({
   isOpen,
-  setIsOpenFalse,
+  close,
   className,
   children,
   shadow = true,
@@ -21,7 +21,7 @@ function Modal({
   return isOpen ? (
     <>
       <div className={`${classes.modal} ${className || ''} ${classes.noShadow} ${classes[position]}`}>
-        <CloseButton onClick={setIsOpenFalse} style={{ margin: '0 0 0 auto' }} />
+        <CloseButton onClick={close} className={classes.closeButton} />
         {children}
       </div>
       {shadow && <div className={classes.modalBg} />}

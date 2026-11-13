@@ -93,4 +93,26 @@ function deepClone<T>(obj: T): T {
   return structuredClone ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
 }
 
-export { getByPath, getPartialObjByPath, setByPath, applyToAllValues, deepClone };
+function getChangedFields<T extends Record<string, unknown>>(initialObj: T, newObj: Partial<T>): Partial<T> {
+  return Object.keys(newObj).reduce<Partial<T>>((changes, key) => {
+    const newVal = newObj[key];
+    const oldVal = initialObj[key];
+    if (isObject(newVal) && isObject(oldVal)) {
+      const nestedChanges = getChangedFields(oldVal as Record<string, unknown>, newVal as Record<string, unknown>);
+      if (Object.keys(nestedChanges).length > 0) {
+        return {
+          ...changes,
+          [key]: nestedChanges,
+        };
+      }
+    } else if (newVal !== oldVal && newVal !== undefined) {
+      return {
+        ...changes,
+        [key]: newVal,
+      };
+    }
+    return changes;
+  }, {});
+}
+
+export { getByPath, getPartialObjByPath, setByPath, applyToAllValues, deepClone, getChangedFields };

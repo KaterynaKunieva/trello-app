@@ -1,0 +1,12 @@
+@use '../../../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  width: get(board-col-width);
+  height: get(board-col-width);
+  background: get(secondary-color);
+  padding: 30px;
+  border-radius: get(board-gap);
+  bottom: get(board-gap);
+  right: get(board-gap);
+}
