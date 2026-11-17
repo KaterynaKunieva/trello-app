@@ -5,9 +5,11 @@ import { boardService } from './boardService';
 import { Id } from '../../../common/interfaces/common';
 import { UpdateBoardDto } from '../types/BoardDtos';
 import { CreateListDto, UpdateListDto } from '../../lists/types/ListDtos';
+import IList from '../../lists/types/IList';
 import { listService } from '../../lists/data/listService';
 import { cardService } from '../../cards/data/cardService';
 import { CreateCardDto, UpdateCardDto, UpdateCardPositionDto } from '../../cards/types/CardDtos';
+import ICard from '../../cards/types/ICard';
 
 interface BoardState {
   isLoading: boolean;
@@ -21,12 +23,17 @@ const initialState: BoardState = {
   board: null,
 };
 
+const EMPTY_LISTS: IList[] = [];
+
 export const fetchBoard = createAsyncThunk<IBoard, Id>('board/fetchBoard', async (boardId: Id) => {
   const data = await boardService.getById(boardId);
 
   const normalizedLists = normalizePositions(data.lists || []).map((list) => ({
     ...list,
-    cards: normalizePositions(list.cards || []),
+    cards: normalizePositions(list.cards || []).map((card) => ({
+      ...card,
+      list_id: list.id,
+    })),
   }));
 
   const sortedBoard = {
@@ -119,12 +126,20 @@ const isBoardSettled = (action: PayloadAction): boolean =>
   isBoardAction(action) && (isFulfilled(action) || isRejected(action));
 
 const boardSlice = createSlice({
-  name: 'boardSlice',
+  name: 'board',
   initialState,
   reducers: {
     setBoard: (state, action) => {
       state.board = action.payload;
     },
+  },
+  selectors: {
+    selectCardById: (state, cardId?: string): ICard | null => {
+      if (!cardId || !state.board) return null;
+      const targetList = state.board.lists.find((list) => list.cards.some((c) => String(c.id) === cardId));
+      return targetList?.cards.find((c) => String(c.id) === cardId) ?? null;
+    },
+    selectLists: (state): IList[] => state.board?.lists ?? EMPTY_LISTS,
   },
   extraReducers: (builder) => {
     builder
@@ -144,5 +159,6 @@ const boardSlice = createSlice({
   },
 });
 
-export default boardSlice.reducer;
 export const { setBoard } = boardSlice.actions;
+export const { selectCardById, selectLists } = boardSlice.selectors;
+export default boardSlice.reducer;

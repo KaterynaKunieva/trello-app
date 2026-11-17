@@ -6,7 +6,7 @@
   background: get(board-card-color);
   padding: get(icon-padding);
   padding-bottom: calc(get(card-padding) + get(icon-width));
-  margin: get(col-padding);
+  margin: get(col-padding) 0;
   border-radius: get(card-radius);
   display: flex;
   justify-content: space-between;

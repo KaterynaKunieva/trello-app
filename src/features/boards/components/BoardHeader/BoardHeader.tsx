@@ -2,6 +2,7 @@ import React, { ChangeEvent, FocusEvent, KeyboardEvent } from 'react';
 import Editable from '../../../../common/components/UI/Editable/Editable';
 import { DeleteButton } from '../../../../common/components/icons';
 import InputBackground from '../../../../common/components/UI/InputBackground/InputBackground';
+import { FormElement } from '../../../../common/hooks/useFormData/types';
 import classes from './boardHeader.module.scss';
 
 interface Props {
@@ -10,8 +11,8 @@ interface Props {
   backgroundValue: string;
   titleError?: string;
   isDisabled: boolean;
-  onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement> | string) => Promise<boolean>;
+  onInputChange: (e: ChangeEvent<FormElement>) => void;
+  onSubmit: (e: FocusEvent<FormElement> | KeyboardEvent<FormElement> | string) => Promise<boolean>;
   onDiscardChanges: () => void;
   onDeleteClick: () => void;
 }
@@ -28,7 +29,7 @@ function BoardHeader({
   onDeleteClick,
 }: Readonly<Props>): React.JSX.Element {
   return (
-    <>
+    <div className={classes.header}>
       <Editable
         name="title"
         value={formTitleValue}
@@ -51,7 +52,7 @@ function BoardHeader({
           discardChanges={onDiscardChanges}
         />
       </div>
-    </>
+    </div>
   );
 }
 

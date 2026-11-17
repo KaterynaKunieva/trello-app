@@ -1,8 +1,11 @@
 @use '../../../../styles/variables' as *;
 
+.header {
+  padding-left: get(board-gap);
+}
+
 .title {
   font-weight: 700;
-  text-align: center;
   font-size: get(font-size-title);
   word-wrap: break-word;
   overflow: hidden;
@@ -10,7 +13,7 @@
 }
 
 .label {
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
 }
 
 .icons {

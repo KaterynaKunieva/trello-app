@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { Outlet, useParams } from 'react-router-dom';
 import classes from './board.module.scss';
 import Button from '../../common/components/UI/Button/Button';
 import Loader from '../../common/components/UI/Loader/Loader';
@@ -18,8 +17,6 @@ function Board(): React.JSX.Element | null {
   const params = useParams<{ board_id: string }>();
   const boardId = params.board_id ?? '';
 
-  const navigate = useNavigate();
-
   const board = useBoard(boardId);
   const { fetchBoard } = board;
   const boardData = board.board;
@@ -28,13 +25,8 @@ function Board(): React.JSX.Element | null {
   const modals = useBoardModals(board);
 
   useEffect(() => {
-    if (boardId) {
-      fetchBoard();
-    } else {
-      toast.error('Board ID is missing');
-      navigate('/boards', { replace: true });
-    }
-  }, [boardId, fetchBoard, navigate]);
+    fetchBoard();
+  }, [fetchBoard]);
 
   const backgroundValue = useMemo(
     (): string => getCssBackground(editForm.values.custom?.background || boardData?.custom.background || ''),
@@ -83,6 +75,7 @@ function Board(): React.JSX.Element | null {
       </Button>
 
       <BoardModals {...modals.modalProps} />
+      <Outlet />
     </div>
   );
 }

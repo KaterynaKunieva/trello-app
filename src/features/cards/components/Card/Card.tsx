@@ -1,4 +1,5 @@
 import React, { MouseEvent, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import classes from './card.module.scss';
 import ICard from '../../types/ICard';
 import { DeleteButton } from '../../../../common/components/icons';
@@ -8,8 +9,6 @@ import { Id } from '../../../../common/interfaces/common';
 import useEditForm from '../../../../common/hooks/useEditForm/useEditForm';
 import { getPartialObjByPath } from '../../../../common/utils/objects';
 import { VALIDATION_RULES } from '../../data/cardValidation';
-import { useAppDispatch } from '../../../../app/hooks';
-import { openCardModal } from '../../data/currentCardSlice';
 
 interface Props {
   card: ICard;
@@ -21,7 +20,8 @@ interface Props {
 
 function Card({ card, onUpdate, onDelete, isDeleting = false, disabled = false }: Readonly<Props>): React.JSX.Element {
   const [isEditable, setIsEditable] = useState(false);
-  const dispatch = useAppDispatch();
+  const { board_id: boardId } = useParams<{ board_id: string }>();
+  const navigate = useNavigate();
 
   const handleUpdateTitle = (data: UpdateCardDto): Promise<void> =>
     onUpdate({
@@ -48,7 +48,9 @@ function Card({ card, onUpdate, onDelete, isDeleting = false, disabled = false }
     if (isEditable || isDeleting) {
       return;
     }
-    dispatch(openCardModal(card));
+    if (boardId) {
+      navigate(`/board/${boardId}/c/${card.id}`);
+    }
   };
 
   const onClickDeleteHandler = (e: MouseEvent<HTMLElement>): void => {

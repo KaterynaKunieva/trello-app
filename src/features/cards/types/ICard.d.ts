@@ -7,6 +7,7 @@ interface ICard {
   description: string;
   color: string;
   list_id: Id;
+  users: Id[];
   custom?: {
     deadline?: string;
   };

@@ -67,7 +67,8 @@ export function useFormData<T extends Record<string, unknown>>(
 
   const validateField = (name: string): boolean => {
     const { rules } = getByPath<{ rules: InputValidationRules }>(config, name);
-    const value = getByPath(values, name);
+    const rawValue = getByPath(values, name);
+    const value = typeof rawValue === 'string' ? rawValue.trim() : rawValue;
 
     if (!rules) {
       return true;

@@ -252,13 +252,16 @@ export function useBoard(boardId: Id): ReturnType {
   };
 
   const createCard = async (values: CreateCardDto): Promise<void> => {
+    const targetList = board?.lists.find((l) => l.id === values.list_id);
+    const nextPosition = targetList ? targetList.cards.length : 0;
+
     try {
       await dispatch(
         boardActions.createCard({
           boardId,
           data: {
             ...values,
-            position: Number(values.position),
+            position: nextPosition,
             custom: values.custom
               ? {
                   ...values.custom,

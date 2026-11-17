@@ -1,150 +1,154 @@
 import React, {
   PropsWithChildren,
-  InputHTMLAttributes,
+  TextareaHTMLAttributes,
   FocusEvent,
   KeyboardEvent,
+  DragEvent,
   useState,
   MouseEvent,
   useRef,
   useEffect,
+  useLayoutEffect,
 } from 'react';
 import classes from './editable.module.scss';
-import Input from '../Input/Input';
-import { EditButton, CloseButton } from '../../icons';
+import { CloseButton } from '../../icons';
 import TextError from '../TextError/TextError';
+import { FormElement } from '../../../hooks/useFormData/types';
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
+interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   name: string;
   error: string;
-  width?: number;
   isDisabled?: boolean;
+  submitOnEnter?: boolean;
   discardChanges: () => void;
-  handleSubmit?: (e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement> | string) => Promise<boolean>;
+  handleSubmit?: (e: FocusEvent<FormElement> | KeyboardEvent<FormElement> | string) => Promise<boolean>;
   onEditableChange?: (isEditable: boolean) => void;
 }
 
 function Editable({
   name,
   error,
-  width = 300,
-  isDisabled: isLoading = false,
+  isDisabled = false,
+  submitOnEnter = true,
   discardChanges,
   handleSubmit,
   onEditableChange,
+  className,
   children,
   ...props
 }: PropsWithChildren<Props>): React.JSX.Element {
   const [isEditable, setIsEditable] = useState(false);
-  const isEditableRef = useRef(isEditable);
-  isEditableRef.current = isEditable;
-
-  const isSubmittingRef = useRef(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [isMultiLine, setIsMultiLine] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const showForm = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation();
+    if (isDisabled) return;
     discardChanges();
-    isEditableRef.current = true;
     setIsEditable(true);
     onEditableChange?.(true);
   };
 
   const closeForm = (e: MouseEvent<HTMLElement>): void => {
+    e.preventDefault();
     e.stopPropagation();
     discardChanges();
-    isEditableRef.current = false;
     setIsEditable(false);
     onEditableChange?.(false);
   };
 
-  const submitAndValidate = async (): Promise<boolean> => {
-    if (!isEditableRef.current || isSubmittingRef.current || !handleSubmit) {
-      return false;
+  const submitAndValidate = async (): Promise<void> => {
+    if (!isEditable || isDisabled || !handleSubmit) {
+      return;
     }
-    isSubmittingRef.current = true;
-    try {
-      const res = await handleSubmit(name);
-      if (res) {
-        isEditableRef.current = false;
-        setIsEditable(false);
-        onEditableChange?.(false);
-        return true;
-      }
-      return false;
-    } finally {
-      isSubmittingRef.current = false;
+    const res = await handleSubmit(name);
+    if (res) {
+      setIsEditable(false);
+      onEditableChange?.(false);
+      return;
     }
+    textareaRef.current?.focus();
   };
-
-  const submitAndValidateRef = useRef(submitAndValidate);
-  submitAndValidateRef.current = submitAndValidate;
 
   useEffect(() => {
-    if (isEditable) {
-      const handleDocumentMouseDown = (e: globalThis.MouseEvent): void => {
-        const target = e.target as Node | null;
-        const isInside = Boolean(containerRef.current && containerRef.current.contains(target));
-
-        if (!isInside) {
-          submitAndValidateRef.current();
-        }
-      };
-
-      document.addEventListener('mousedown', handleDocumentMouseDown, true);
-      return () => {
-        document.removeEventListener('mousedown', handleDocumentMouseDown, true);
-      };
+    if (isEditable && textareaRef.current) {
+      textareaRef.current.focus();
+      const len = textareaRef.current.value.length;
+      textareaRef.current.setSelectionRange(len, len);
     }
-    return undefined;
   }, [isEditable]);
 
-  const handleBlur = (): void => {
-    submitAndValidate();
-  };
+  useLayoutEffect(() => {
+    if (isEditable && textareaRef.current) {
+      textareaRef.current.style.height = '0px';
+      const { scrollHeight } = textareaRef.current;
+      textareaRef.current.style.height = `${scrollHeight}px`;
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === 'Enter') {
+      const computedLineHeight = parseFloat(window.getComputedStyle(textareaRef.current).lineHeight);
+      if (!Number.isNaN(computedLineHeight) && computedLineHeight > 0) {
+        setIsMultiLine(scrollHeight > computedLineHeight * 1.5);
+      }
+    }
+  }, [isEditable, props.value]);
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>): void => {
+    if (e.key === 'Escape') {
       e.preventDefault();
-      submitAndValidate();
+      e.stopPropagation();
+      discardChanges();
+      setIsEditable(false);
+      onEditableChange?.(false);
+      return;
+    }
+
+    if (submitOnEnter && e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.currentTarget.blur();
     }
   };
 
   const handleContainerClick = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation();
+    if (!isEditable && !isDisabled) {
+      showForm(e);
+    }
   };
 
-  const handleContainerMouseDown = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation();
+  const handleDragStart = (e: DragEvent<HTMLElement>): void => {
+    if (isEditable) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
 
   return (
-    <div
-      ref={containerRef}
-      onClick={handleContainerClick}
-      onMouseDown={handleContainerMouseDown}
-      className={classes.container}
-      style={{ width: `${width}px` }}
-    >
-      <div className={classes.editable}>
+    <div onClick={handleContainerClick} className={classes.container}>
+      <div
+        className={`${classes.editable} ${isEditable ? classes.isEditable : ''}`}
+        draggable={isEditable || undefined}
+        onDragStart={handleDragStart}
+      >
         {isEditable ? (
           <>
-            <Input
-              autoFocus
-              onKeyDown={handleKeyDown}
-              onBlur={handleBlur}
-              name={name}
-              type="text"
-              className={classes.inputLabel}
-              inputClassname={`${classes.inputField} ${props.className || ''}`}
-              {...props}
+            <label htmlFor={name} className={classes.inputLabel}>
+              <textarea
+                ref={textareaRef}
+                id={name}
+                name={name}
+                rows={1}
+                onKeyDown={handleKeyDown}
+                onBlur={submitAndValidate}
+                className={`${classes.inputField} ${className || ''}`}
+                {...props}
+              />
+            </label>
+            <CloseButton
+              className={`${classes.close} ${isMultiLine ? classes.topAligned : ''}`}
+              onMouseDown={closeForm}
             />
-            <CloseButton className={classes.close} onMouseDown={closeForm} />
           </>
         ) : (
-          <>
-            {children}
-            <EditButton disabled={isLoading} onClick={showForm} className={classes.edit} />
-          </>
+          <div className={classes.content}>{children}</div>
         )}
       </div>
 

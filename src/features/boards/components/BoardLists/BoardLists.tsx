@@ -3,7 +3,7 @@ import IList from '../../../lists/types/IList';
 import ICard from '../../../cards/types/ICard';
 import { Id } from '../../../../common/interfaces/common';
 import { UpdateListDto } from '../../../lists/types/ListDtos';
-import { NewCardTargetInfo, UpdateCardDto } from '../../../cards/types/CardDtos';
+import { UpdateCardDto } from '../../../cards/types/CardDtos';
 import useDrag from '../../../dnd/useDrag';
 import { DRAG_EL_TYPE, DRAG_ORIENTATION } from '../../../dnd/DragNDrop';
 import Placeholder from '../../../../common/components/UI/Placeholder/Placeholder';
@@ -20,7 +20,7 @@ interface Props {
   onUpdateCard: (data: UpdateCardDto) => Promise<void>;
   onDeleteList: (id: Id) => void;
   onDeleteCard: (id: Id) => void;
-  openCreateCardModal: (info: NewCardTargetInfo) => void;
+  openCreateCardModal: (listId: Id) => void;
   isListDeleting: boolean;
   isCardDeleting: boolean;
   isBoardDeleting: boolean;
@@ -74,12 +74,7 @@ function BoardLists({
           onDeleteCard={onDeleteCard}
           isCardDeleting={isCardDeleting}
           onUpdateCard={onUpdateCard}
-          openCreateCardModal={(): void =>
-            openCreateCardModal({
-              list_id: list.id,
-              position: list.cards.length,
-            })
-          }
+          openCreateCardModal={(): void => openCreateCardModal(list.id)}
         />
 
         {isDraggingAllowed && isLastItem && isLastPlaceholder && (

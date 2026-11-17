@@ -3,6 +3,7 @@
 .container {
   display: flex;
   justify-content: space-between;
+  margin-bottom: get(col-padding);
 }
 .column {
   width: get(board-col-width);
@@ -19,18 +20,16 @@
   text-transform: uppercase;
   word-wrap: break-word;
   overflow: hidden;
-  text-align: center;
 }
 .addButton {
   margin: 0 auto;
   margin-top: get(board-gap);
 }
 .list {
-  cursor: grab;
   background-color: get(board-col-bg);
   border-radius: get(card-radius);
   position: relative;
-  padding: 5px 0;
+  padding: get(col-padding);
 
   .deleteBtn {
     opacity: 0;
@@ -41,10 +40,6 @@
     opacity: 1;
   }
 }
-.isDraggingOver {
-  border: 1px solid get(primary-color);
-}
-
 .emptyMessage {
   text-align: center;
   margin: get(icon-padding) auto;

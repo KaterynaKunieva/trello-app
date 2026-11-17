@@ -52,7 +52,7 @@ export function getCrossListCardUpdates(
   );
   const oldApiUpdates: UpdateCardPositionDto[] = oldListUpdates.map((u) => ({ ...u, list_id: oldList.id }));
 
-  const newItem = { ...card, position: newPosition };
+  const newItem: ICard = { ...card, position: newPosition, list_id: targetList.id };
   const createAction: ReorderCardAction = {
     type: 'CREATE',
     payload: {

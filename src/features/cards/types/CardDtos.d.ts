@@ -14,6 +14,4 @@ type ReorderCardAction = ReorderAction<ICard>;
 
 type UpdateCardPositionDto = Pick<ICard, 'id' | 'position' | 'list_id'>;
 
-type NewCardTargetInfo = Pick<CreateCardDto, 'list_id' | 'position'>;
-
-export { CreateCardDto, ReorderCardAction, UpdateCardDto, UpdateCardPositionDto, NewCardTargetInfo };
+export { CreateCardDto, ReorderCardAction, UpdateCardDto, UpdateCardPositionDto };
