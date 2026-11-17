@@ -21,10 +21,11 @@ libraries).
 
 ## Run
 
-1. `npm i` - install dependencies
-2. `npm run start` - run application on url http://localhost:3000/
-3. navigate to the board page http://localhost:3000/trello-app/#board
-4. more commands in the file package.json
+1. configure `.env.example` (rename to .env.local)
+2. `npm i` - install dependencies
+3. `npm run start` - run application on url http://localhost:3000/
+4. navigate to the board page http://localhost:3000/trello-app/#board
+5. more commands in the file package.json
 
 ## Preview
 
