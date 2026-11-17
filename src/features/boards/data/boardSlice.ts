@@ -5,6 +5,7 @@ import { boardService } from './boardService';
 import { Id } from '../../../common/interfaces/common';
 import { UpdateBoardDto } from '../types/BoardDtos';
 import { CreateListDto, UpdateListDto } from '../../lists/types/ListDtos';
+import IList from '../../lists/types/IList';
 import { listService } from '../../lists/data/listService';
 import { cardService } from '../../cards/data/cardService';
 import { CreateCardDto, UpdateCardDto, UpdateCardPositionDto } from '../../cards/types/CardDtos';
@@ -21,6 +22,8 @@ const initialState: BoardState = {
   error: null,
   board: null,
 };
+
+const EMPTY_LISTS: IList[] = [];
 
 export const fetchBoard = createAsyncThunk<IBoard, Id>('board/fetchBoard', async (boardId: Id) => {
   const data = await boardService.getById(boardId);
@@ -136,6 +139,7 @@ const boardSlice = createSlice({
       const targetList = state.board.lists.find((list) => list.cards.some((c) => String(c.id) === cardId));
       return targetList?.cards.find((c) => String(c.id) === cardId) ?? null;
     },
+    selectLists: (state): IList[] => state.board?.lists ?? EMPTY_LISTS,
   },
   extraReducers: (builder) => {
     builder
@@ -156,5 +160,5 @@ const boardSlice = createSlice({
 });
 
 export const { setBoard } = boardSlice.actions;
-export const { selectCardById } = boardSlice.selectors;
+export const { selectCardById, selectLists } = boardSlice.selectors;
 export default boardSlice.reducer;

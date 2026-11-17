@@ -9,6 +9,7 @@ const createMockCard = (id: Id, position: number, listId: Id = 1): ICard => ({
   position,
   color: '',
   list_id: listId,
+  users: [],
   description: '',
   custom: { deadline: '' },
   created_at: new Date(0),

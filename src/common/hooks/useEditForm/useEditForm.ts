@@ -1,7 +1,7 @@
 import { useState, FocusEvent, KeyboardEvent, ChangeEvent, useEffect, useRef } from 'react';
 import { useFormData, FormConfig } from '../useFormData';
-import { ValidationErrors } from '../useFormData/types';
-import { getByPath, deepClone } from '../../utils/objects';
+import { FormElement, ValidationErrors } from '../useFormData/types';
+import { getByPath, setByPath, deepClone } from '../../utils/objects';
 
 function useEditForm<T extends Record<string, unknown>>(
   initialValues: T,
@@ -11,8 +11,8 @@ function useEditForm<T extends Record<string, unknown>>(
   values: T;
   errors: ValidationErrors<T>;
   isLoading: boolean;
-  onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  submit: (e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement> | string) => Promise<boolean>;
+  onInputChange: (e: ChangeEvent<FormElement>) => void;
+  submit: (e: FocusEvent<FormElement> | KeyboardEvent<FormElement> | string) => Promise<boolean>;
   discardChanges: () => void;
 } {
   const initialValuesRef = useRef<T>(deepClone(initialValues));
@@ -40,22 +40,23 @@ function useEditForm<T extends Record<string, unknown>>(
     cleanErrors();
   };
 
-  const submit = async (
-    e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement> | string
-  ): Promise<boolean> => {
+  const submit = async (e: FocusEvent<FormElement> | KeyboardEvent<FormElement> | string): Promise<boolean> => {
     const name = typeof e === 'string' ? e : e?.currentTarget?.name || '';
     if (!name || !validateField(name)) {
       return false;
     }
-    const newData = getByPath<T>(values, name);
-    const oldData = getByPath<T>(initialValuesRef.current, name);
+    const rawNewData = getByPath<unknown>(values, name);
+    const rawOldData = getByPath<unknown>(initialValuesRef.current, name);
+    const newData = typeof rawNewData === 'string' ? rawNewData.trim() : rawNewData;
+    const oldData = typeof rawOldData === 'string' ? rawOldData.trim() : rawOldData;
     if (newData === oldData) {
+      discardChanges();
       return true;
     }
 
     setIsLoading(true);
     try {
-      await updateData(getPartialValue(name));
+      await updateData(setByPath(getPartialValue(name), name, newData));
       return true;
     } catch {
       return false;

@@ -22,7 +22,7 @@ function Modal({
     if (!isOpen) return undefined;
 
     const handleKeyDown = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && !e.defaultPrevented) {
         close();
       }
     };
@@ -37,7 +37,7 @@ function Modal({
     <>
       <div className={`${classes.modal} ${className || ''} ${classes.noShadow} ${classes[position]}`}>
         <CloseButton onClick={close} className={classes.closeButton} />
-        {children}
+        <div className={classes.scrollableContent}>{children}</div>
       </div>
       {shadow && <div className={classes.modalBg} onClick={close} />}
     </>
