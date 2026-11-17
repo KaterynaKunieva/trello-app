@@ -33,13 +33,18 @@ function Modal({
     };
   }, [isOpen, close]);
 
+  const handleClose = (e: React.MouseEvent): void => {
+    e.preventDefault();
+    close();
+  };
+
   return isOpen ? (
     <>
       <div className={`${classes.modal} ${className || ''} ${classes.noShadow} ${classes[position]}`}>
-        <CloseButton onClick={close} className={classes.closeButton} />
+        <CloseButton onMouseDown={handleClose} onClick={close} className={classes.closeButton} />
         <div className={classes.scrollableContent}>{children}</div>
       </div>
-      {shadow && <div className={classes.modalBg} onClick={close} />}
+      {shadow && <div className={classes.modalBg} onMouseDown={handleClose} onClick={close} />}
     </>
   ) : null;
 }
