@@ -3,18 +3,22 @@ import { API_CONFIG } from './config';
 import { GeneralApiError } from './GeneralApiError';
 import { processErrorMessage } from '../common/utils/errors';
 import { loader } from '../common/utils/loader';
+import tokenStorage from '../features/auth/utils/tokenStorage';
 
 const instance = axios.create({
   baseURL: API_CONFIG.baseURL,
   headers: {
     'Content-Type': 'application/json',
-    Authorization: 'Bearer 123',
   },
 });
 
 instance.interceptors.request.use(
   (request) => {
     loader.show();
+    const authToken = tokenStorage.get()?.token;
+    if (authToken) {
+      request.headers.set('Authorization', `Bearer ${authToken}`);
+    }
     return request;
   },
   (error) => {

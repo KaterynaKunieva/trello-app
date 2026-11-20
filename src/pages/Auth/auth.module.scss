@@ -1,0 +1,33 @@
+@use '../../styles/variables' as *;
+
+.authPage {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.title {
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  text-align: center;
+}
+.container {
+  width: 350px;
+  max-width: 100%;
+}
+.form {
+  width: 100%;
+}
+.input {
+  width: 100%;
+}
+.formText {
+  margin-top: 15px;
+  font-size: 14px;
+  text-align: center;
+  a {
+    text-decoration: underline;
+  }
+}
